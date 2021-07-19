@@ -1,0 +1,15 @@
+{
+	"name": "hubox",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"startApp": "electron ."
+	},
+	"keywords": [],
+	"author": "seattleowl",
+	"license": "ISC",
+	"description": "",
+	"dependencies": {
+		"electron": "^13.1.1"
+	}
+}
