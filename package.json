@@ -1,16 +1,11 @@
 {
-	"name": "hubox",
+	"name": "venture",
 	"version": "1.0.0",
 	"main": "index.js",
 	"scripts": {
-		"startApp": "electron .",
-		"startServer": "node ./server/index.js"
+		"startServer": "node server"
 	},
 	"keywords": [],
 	"author": "seattleowl",
-	"license": "ISC",
-	"description": "",
-	"dependencies": {
-		"electron": "^13.1.1"
-	}
+	"license": "ISC"
 }
