@@ -1,15 +1,15 @@
 {
-  "name": "app",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "startApp": "electron ."
-  },
-  "devDependencies": {},
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "electron": "^13.1.7"
-  }
+	"name": "app",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"start": "electron ."
+	},
+	"devDependencies": {},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"electron": "^13.1.7"
+	}
 }
