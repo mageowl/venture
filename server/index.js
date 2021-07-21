@@ -7,4 +7,8 @@ app.get("/", (req, res) => {
 	res.send("u not playing. go play");
 });
 
+io.on("connection", () => {
+	console.log("hello world");
+});
+
 server.listen(port);

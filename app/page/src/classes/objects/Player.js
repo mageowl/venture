@@ -60,7 +60,7 @@ export default class Player extends Phaser.GameObjects.Container {
 
 		const eyes = config.scene.add.sprite(0, 0, "skin.eyes").setOrigin(0.5, 1);
 
-		const skin = config.scene.add.container(0, 0, [
+		const skin = config.scene.add.container(0, -25, [
 			body,
 			hair,
 			eyes,
@@ -70,7 +70,7 @@ export default class Player extends Phaser.GameObjects.Container {
 
 		super(config.scene, config.x, config.y, [skin]);
 
-		this.setSize(210, 340).setScale(0.1, 0.1);
+		this.setSize(120, 290).setScale(0.1, 0.1);
 
 		config.scene.add.existing(this);
 		config.scene.physics.world.enable(this);

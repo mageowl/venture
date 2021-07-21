@@ -1,4 +1,5 @@
 import Player from "../objects/player.js";
+import socket from "../../socket.js";
 
 export default class GameScene extends Phaser.Scene {
 	constructor() {
@@ -98,10 +99,10 @@ export default class GameScene extends Phaser.Scene {
 			y: -100,
 			local: true,
 			texture: {
-				body: 3,
-				hairColor: 1,
-				hairStyle: 2,
-				pants: 3,
+				body: 0,
+				hairColor: 0,
+				hairStyle: 0,
+				pants: 0,
 				shirt: 0
 			}
 		});
@@ -120,7 +121,7 @@ export default class GameScene extends Phaser.Scene {
 
 		this.physics.add.collider(this.player, this.island);
 
-		this.cameras.main.setZoom(2.5).startFollow(this.player);
+		this.cameras.main.setZoom(2.5).startFollow(this.player, true, 0.2, 0.2);
 	}
 
 	update() {

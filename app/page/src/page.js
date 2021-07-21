@@ -15,7 +15,7 @@ const game = new Phaser.Game({
 		baseURL: "assets"
 	},
 	render: {
-		antialias: false
+		antialias: true
 	},
 	scene: GameScene
 });
