@@ -93,19 +93,24 @@ export default class GameScene extends Phaser.Scene {
 	}
 
 	create() {
-		this.player = new Player({
+		const skin = {
+			body: 0,
+			hairColor: 0,
+			hairStyle: 1,
+			pants: 1,
+			shirt: 0
+		};
+
+		this.localPlayer = new Player({
 			scene: this,
 			x: 250,
 			y: -100,
-			local: true,
-			texture: {
-				body: 0,
-				hairColor: 0,
-				hairStyle: 0,
-				pants: 0,
-				shirt: 0
-			}
+			connectionID: "local",
+			texture: skin
 		});
+		socket.emit("join", { texture: skin });
+
+		const externalPlayers = [];
 
 		this.map = this.add.tilemap("map.island");
 		this.map.addTilesetImage("blocks", "map.tileset");
@@ -114,17 +119,46 @@ export default class GameScene extends Phaser.Scene {
 			.setCollisionByProperty({ collision: true })
 			.setOrigin(0.5)
 			.setScale(0.1);
-		this.bg = this.map
-			.createLayer("background", "blocks", 0, 0)
-			.setScale(0.1)
-			.setDepth(-1);
+		this.bg = this.map.createLayer("background", "blocks", 0, 0).setScale(0.1);
 
-		this.physics.add.collider(this.player, this.island);
+		this.physics.add.collider(this.localPlayer, this.island);
 
-		this.cameras.main.setZoom(2.5).startFollow(this.player, true, 0.2, 0.2);
+		this.cameras.main
+			.setZoom(2.5)
+			.startFollow(this.localPlayer, true, 0.2, 0.2);
+
+		socket.on(
+			"player-connect",
+			([
+				connectionID,
+				{
+					sprite: { texture }
+				}
+			]) => {
+				externalPlayers.push(
+					new Player({
+						scene: this,
+						x: 250,
+						y: -100,
+						connectionID,
+						texture
+					})
+				);
+			}
+		);
+
+		socket.on("server-update", (players) => {
+			externalPlayers.forEach((player) => player.update(players));
+		});
 	}
 
 	update() {
-		this.player.update();
+		this.localPlayer.update();
+
+		socket.emit("update", {
+			x: this.localPlayer.x,
+			y: this.localPlayer.y,
+			anim: this.localPlayer.animData
+		});
 	}
 }

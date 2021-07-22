@@ -22,6 +22,7 @@ export default class Player extends Phaser.GameObjects.Container {
 
 	currentAnim = Player.anims.IDLE;
 	frame = 0;
+	animData = {};
 
 	fallTime = 0;
 
@@ -73,16 +74,19 @@ export default class Player extends Phaser.GameObjects.Container {
 		this.setSize(120, 290).setScale(0.1, 0.1);
 
 		config.scene.add.existing(this);
-		config.scene.physics.world.enable(this);
+		if (config.connectionID === "local") {
+			config.scene.physics.world.enable(this);
+			this.body.setOffset(0, -170);
+			this.setDepth(2);
+		} else this.setDepth(1);
 
 		this.skin = skin;
 		this.keys = config.scene.input.keyboard.addKeys("W,A,S,D");
-		this.local = config.local;
-		this.body.setOffset(0, -170);
+		this.cid = config.connectionID;
 	}
 
-	update() {
-		if (this.local) {
+	update(players) {
+		if (this.cid === "local") {
 			const inputFrame = Object.fromEntries(
 				Object.entries(this.keys).map(([key, { isDown }]) => [key, isDown])
 			);
@@ -91,34 +95,56 @@ export default class Player extends Phaser.GameObjects.Container {
 			if (this.fallTime === 0 && inputFrame.W && this.body.onFloor()) {
 				this.body.setVelocityY(-200);
 			} else this.body.setVelocityY(Math.min(this.body.velocity.y, 150));
-		}
 
-		if (this.body.velocity.y > 0 || this.fallTime > 0) {
-			if (Math.abs(this.body.velocity.x) > 0)
-				this.setFrame(Player.anims.FALL, this.body.velocity.x < 0);
-			else this.setFrame(Player.anims.FALL);
-			if (this.body.onFloor()) {
-				this.setFrame(Player.anims.IDLE, null, 1, 0.75);
-				this.fallTime -= 1;
+			if (this.body.velocity.y > 0 || this.fallTime > 0) {
+				if (Math.abs(this.body.velocity.x) > 0)
+					this.setFrame(Player.anims.FALL, this.body.velocity.x < 0);
+				else this.setFrame(Player.anims.FALL);
+				if (this.body.onFloor()) {
+					this.setFrame(Player.anims.IDLE, null, 1, 0.75);
+					this.fallTime -= 1;
+				} else {
+					this.fallTime = 7;
+				}
+			} else if (this.body.velocity.y < 0) {
+				if (Math.abs(this.body.velocity.x) > 0)
+					this.setFrame(Player.anims.JUMP, this.body.velocity.x < 0);
+				else this.setFrame(Player.anims.JUMP);
+			} else if (Math.abs(this.body.velocity.x) > 0) {
+				this.setFrame(Player.anims.WALK, this.body.velocity.x < 0);
 			} else {
-				this.fallTime = 7;
+				this.setFrame(Player.anims.IDLE);
 			}
-		} else if (this.body.velocity.y < 0) {
-			if (Math.abs(this.body.velocity.x) > 0)
-				this.setFrame(Player.anims.JUMP, this.body.velocity.x < 0);
-			else this.setFrame(Player.anims.JUMP);
-		} else if (Math.abs(this.body.velocity.x) > 0) {
-			this.setFrame(Player.anims.WALK, this.body.velocity.x < 0);
 		} else {
-			this.setFrame(Player.anims.IDLE);
+			const { x, y, anim } = players[this.cid];
+
+			this.setPosition(x, y);
+
+			this.setFrame(
+				anim.frameData,
+				anim.flipX,
+				anim.scaleX,
+				anim.scaleY,
+				anim.frame
+			);
 		}
 	}
 
-	setFrame(anim, flipX, scaleX, scaleY) {
+	setFrame(anim, flipX, scaleX, scaleY, frame) {
 		if (anim !== this.currentAnim) {
 			this.currentAnim = anim;
 			this.frame = 0;
 		}
+
+		if (frame != null) this.frame = frame;
+
+		this.animData = {
+			frameData: anim,
+			frame: this.frame,
+			flipX,
+			scaleX,
+			scaleY
+		};
 
 		this.frame += this.currentAnim.speed / 60;
 		this.skin.each((s) => {
