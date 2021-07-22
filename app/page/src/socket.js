@@ -1,5 +1,3 @@
-import "http://localhost:3000/socket.io/socket.io.js";
-
-const socket = io("http://localhost:3000");
+const socket = io("https://venture-game.herokuapp.com");
 
 export default socket;
